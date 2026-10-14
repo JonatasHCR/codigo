@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trocas | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/trocas.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <h2>Troca ou devolução</h2>
+      <p class="suave">Até 30 dias após a compra. O item devolvido volta ao estoque; na devolução é gerado um vale-troca válido por 90 dias.</p>
+      <form id="formBuscaVenda" class="grade-form">
+        <label>Nº da venda (está no cupom) <input name="idVenda" type="number" min="1" required></label>
+        <button type="submit">Buscar venda</button>
+      </form>
+      <p id="infoVenda" class="suave"></p>
+
+      <div id="secaoItens" hidden>
+        <div class="tabela-rolagem">
+          <table>
+            <thead><tr><th></th><th>Produto</th><th class="numero">Comprado</th><th class="numero">Pode trocar</th><th class="numero">Pago por un.</th></tr></thead>
+            <tbody id="itensVenda"></tbody>
+          </table>
+        </div>
+
+        <form id="formTroca" class="grade-form" style="margin-top:12px">
+          <label>Operação
+            <select name="tipoOperacao" id="tipoOperacao">
+              <option value="TROCA">Troca (outro tamanho/cor/produto)</option>
+              <option value="DEVOLUCAO">Devolução (gera vale-troca)</option>
+            </select>
+          </label>
+          <label>Motivo
+            <select name="motivoTroca">
+              <option value="TAMANHO">Tamanho</option>
+              <option value="COR">Cor</option>
+              <option value="DEFEITO">Defeito</option>
+              <option value="ARREPENDIMENTO">Arrependimento</option>
+              <option value="OUTRO">Outro</option>
+            </select>
+          </label>
+          <label>Quantidade <input name="quantidade" type="number" min="1" value="1" required></label>
+          <label id="campoNovo">Produto novo (código de barras ou nome)
+            <input id="buscaNovo" list="sugestoesNovo" autocomplete="off">
+            <datalist id="sugestoesNovo"></datalist>
+          </label>
+          <button type="submit">Registrar</button>
+        </form>
+      </div>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao">
+      <h2>Consultar vale-troca</h2>
+      <form id="formVale" class="grade-form">
+        <label>Código do vale <input name="codigo" maxlength="12" required style="text-transform:uppercase"></label>
+        <button type="submit" class="secundario">Consultar</button>
+      </form>
+      <p id="resultadoVale" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao">
+      <h2>Últimas trocas</h2>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Data</th><th>Venda</th><th>Operação</th><th>Motivo</th><th>Produto devolvido</th><th class="numero">Qtd.</th><th class="numero">Diferença</th><th>Vale</th></tr></thead>
+          <tbody id="listaTrocas"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Produtos | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/produtos.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <h2>Consultar produtos</h2>
+      <form id="formFiltros" class="grade-form">
+        <label>Nome, código ou código de barras <input name="termo" type="search"></label>
+        <label>Categoria <select name="idCategoria" id="filtroCategoria"></select></label>
+        <label>Tamanho <input name="tamanho" maxlength="5" placeholder="Ex.: M, 40"></label>
+        <label>Cor <input name="cor" maxlength="30"></label>
+        <label>Gênero
+          <select name="generoProduto">
+            <option value="">Todos</option>
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="UNISSEX">Unissex</option>
+            <option value="INFANTIL">Infantil</option>
+          </select>
+        </label>
+        <label>Preço mínimo <input name="precoMinimo" type="number" min="0" step="0.01"></label>
+        <label>Preço máximo <input name="precoMaximo" type="number" min="0" step="0.01"></label>
+        <label class="inline"><input type="checkbox" name="somenteDisponivel"> Só com estoque</label>
+      </form>
+      <div class="tabela-rolagem">
+        <table>
+          <thead>
+            <tr><th>Produto</th><th>Categoria</th><th>Tam.</th><th>Cor</th><th>Código de barras</th>
+                <th class="numero">Preço</th><th class="numero">Estoque</th><th>Local</th><th class="editor">Ações</th></tr>
+          </thead>
+          <tbody id="lista"></tbody>
+        </table>
+      </div>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao editor" hidden>
+      <div class="cabecalho-secao">
+        <h2 id="tituloProduto">Novo produto</h2>
+        <button type="button" id="novoProduto" class="secundario pequeno" hidden>Cadastrar outro produto</button>
+      </div>
+      <form id="formProduto" class="grade-form">
+        <label>Código <input name="codigoProduto" maxlength="20" placeholder="Ex.: CAM-002"></label>
+        <label class="largo">Nome <input name="nomeProduto" required maxlength="100"></label>
+        <label>Categoria <select name="idCategoria" id="selCategoria" required></select></label>
+        <label>Fornecedor <select name="idFornecedor" id="selFornecedor" required></select></label>
+        <label>Marca <input name="marcaProduto" maxlength="50"></label>
+        <label>Gênero
+          <select name="generoProduto">
+            <option value="">—</option>
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="UNISSEX">Unissex</option>
+            <option value="INFANTIL">Infantil</option>
+          </select>
+        </label>
+        <label>Material <input name="materialProduto" maxlength="50" placeholder="algodão, couro, jeans..."></label>
+        <label>Preço de custo <input name="precoCusto" type="number" min="0" step="0.01" required></label>
+        <label>Preço de venda <input name="precoVenda" type="number" min="0.01" step="0.01" required></label>
+        <label class="largo">Descrição <textarea name="descricaoProduto" rows="2"></textarea></label>
+        <button type="submit">Salvar produto</button>
+      </form>
+      <p id="mensagemProduto" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao editor" id="secaoGrade" hidden>
+      <h2 id="tituloGrade">Grade (tamanhos e cores)</h2>
+      <p class="suave">O estoque não é editado aqui: ele muda pela entrada de mercadorias, vendas e trocas.</p>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Tamanho</th><th>Cor</th><th>Código de barras</th><th class="numero">Estoque</th><th class="numero">Mínimo</th><th>Local</th><th>Ações</th></tr></thead>
+          <tbody id="listaGrade"></tbody>
+        </table>
+      </div>
+      <h3 id="tituloVariacao" style="margin-top:16px">Nova variação</h3>
+      <form id="formVariacao" class="grade-form">
+        <label>Tamanho <input name="tamanho" required maxlength="5" placeholder="P, M, G, 38..."></label>
+        <label>Cor <input name="cor" required maxlength="30"></label>
+        <label>Código de barras (EAN) <input name="codigoBarras" inputmode="numeric" maxlength="13"></label>
+        <label>Estoque mínimo <input name="estoqueMinimo" type="number" min="0" value="2"></label>
+        <label>Localização <input name="localizacao" maxlength="30" placeholder="Prateleira A3"></label>
+        <button type="submit">Salvar variação</button>
+      </form>
+      <p id="mensagemGrade" class="mensagem" role="status"></p>
+    </section>
+  </main>
+</body>
+</html>

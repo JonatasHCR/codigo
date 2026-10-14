@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/login.js"></script>
+</head>
+<body>
+  <main class="pagina-login">
+    <section class="cartao">
+      <h1>Loja Modelo</h1>
+      <p class="suave">Sistema de gestão — roupas e calçados</p>
+      <form id="formLogin">
+        <label>Login
+          <input name="login" required autocomplete="username" autofocus>
+        </label>
+        <label>Senha
+          <input name="senha" type="password" required autocomplete="current-password">
+        </label>
+        <button type="submit">Entrar</button>
+      </form>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+  </main>
+</body>
+</html>

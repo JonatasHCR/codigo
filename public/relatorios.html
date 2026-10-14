@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatórios | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/relatorios.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <h2>Relatórios gerenciais</h2>
+      <form id="formRelatorio" class="grade-form">
+        <label>Relatório <select name="tipo" id="tipo"></select></label>
+        <label class="periodo">Data inicial <input name="inicio" type="date" required></label>
+        <label class="periodo">Data final <input name="fim" type="date" required></label>
+        <div class="botoes largo">
+          <button type="submit">Ver na tela</button>
+          <button type="button" class="secundario" data-formato="pdf">Baixar PDF</button>
+          <button type="button" class="secundario" data-formato="csv">Baixar CSV (Excel)</button>
+        </div>
+      </form>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao" id="secaoResultado" hidden>
+      <h2 id="tituloResultado"></h2>
+      <p id="periodoResultado" class="suave"></p>
+      <div class="tabela-rolagem">
+        <table>
+          <thead id="cabecalho"></thead>
+          <tbody id="linhas"></tbody>
+          <tfoot id="totais"></tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

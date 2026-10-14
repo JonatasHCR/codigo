@@ -1,0 +1,12 @@
+{
+  "name": "loja-sistema-testes",
+  "version": "1.0.0",
+  "description": "Teste automático de ponta a ponta da API da Loja Modelo (o sistema roda em PHP)",
+  "private": true,
+  "scripts": {
+    "smoke": "node scripts/smoke.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

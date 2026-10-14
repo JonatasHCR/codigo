@@ -1,0 +1,106 @@
+/* PDV "Vitrine": produtos à esquerda, sacola à direita; uma coluna no celular (RNF02) */
+.pdv {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  min-height: calc(100vh - 64px);
+}
+.aviso-caixa {
+  grid-column: 1 / -1; margin: 0; padding: 12px 22px;
+  background: var(--fundo-alerta); color: var(--cor-alerta); font-weight: 600; border-bottom: 1px solid var(--cor-borda);
+}
+
+/* ---------- Vitrine ---------- */
+.vitrine { padding: 24px 22px; display: grid; gap: 20px; align-content: start; min-width: 0; }
+.vitrine-topo { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
+.vitrine-topo h2 { margin: 0; font-size: 2.1rem; }
+.buscas { display: flex; flex-wrap: wrap; gap: 12px 18px; flex: 1; justify-content: flex-end; }
+.buscas label { flex: 1 1 200px; max-width: 280px; }
+.buscas input { border: none; border-bottom: 1px solid var(--cor-texto); padding: 8px 2px; }
+.buscas input:focus { border-bottom: 2px solid var(--cor-primaria); }
+
+.cartoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 22px 16px; }
+.cartao-peca {
+  background: transparent; border: none; border-radius: 0; padding: 0; color: var(--cor-texto);
+  text-align: left; display: grid; gap: 6px; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .95rem;
+}
+.cartao-peca:hover { background: transparent; }
+.foto {
+  aspect-ratio: 4 / 5; max-width: 100%; border-radius: var(--raio); position: relative; overflow: hidden;
+  display: grid; place-items: center; background-size: cover; background-position: center;
+}
+.foto em { font-family: var(--fonte-titulo); font-style: normal; font-size: 3.4rem; color: rgba(255, 255, 255, .9); }
+.selo {
+  position: absolute; top: 8px; left: 8px; background: var(--cor-superficie); color: var(--cor-primaria);
+  font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; padding: 3px 7px; font-weight: 700;
+}
+.selo.baixo { color: var(--cor-erro); }
+.acao-adicionar {
+  position: absolute; inset: auto 8px 8px 8px; background: var(--cor-texto); color: var(--cor-superficie);
+  text-align: center; padding: 8px; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700;
+  opacity: 0; transition: opacity .2s;
+}
+.cartao-peca:hover .acao-adicionar, .cartao-peca:focus-visible .acao-adicionar { opacity: 1; }
+.cartao-peca .nome { font-weight: 500; }
+.cartao-peca small { color: var(--cor-texto-suave); font-size: .82rem; }
+.cartao-peca .preco { font-weight: 700; font-variant-numeric: tabular-nums; }
+.cartao-peca .preco s { color: #9aa4a1; font-weight: 400; margin-right: 6px; }
+@media (hover: none) { .acao-adicionar { opacity: 1; } }
+
+/* ---------- Sacola ---------- */
+.sacola {
+  background: var(--cor-superficie); border-left: 1px solid var(--cor-borda);
+  padding: 24px 22px; display: grid; gap: 16px; align-content: start;
+}
+.sacola h2 { margin: 0; font-size: 1.8rem; display: flex; justify-content: space-between; align-items: baseline; }
+.sacola h2 span { font-family: var(--fonte-texto); font-size: .8rem; color: var(--cor-texto-suave); }
+.sacola h3 { margin: 0; font-size: 1.2rem; }
+.bloco { display: grid; gap: 10px; }
+.linha-campos { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px 16px; }
+
+.itens { display: grid; gap: 0; }
+.item { display: grid; grid-template-columns: 34px 1fr auto; gap: 2px 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--cor-borda); }
+.item .mini { width: 34px; height: 42px; border-radius: var(--raio); background-size: cover; }
+.item small { display: block; color: var(--cor-texto-suave); font-size: .8rem; }
+.item .promocao { color: var(--cor-primaria); }
+.item .valores { text-align: right; font-variant-numeric: tabular-nums; display: grid; gap: 4px; justify-items: end; }
+.quantidade { display: inline-flex; align-items: center; gap: 6px; }
+.quantidade button { padding: 0; width: 24px; height: 24px; border-radius: 0; font-size: .9rem; letter-spacing: 0; }
+.vazio-sacola { color: var(--cor-texto-suave); font-style: italic; margin: 0; }
+
+.formas { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.formas button {
+  background: transparent; border: none; border-bottom: 1.5px solid transparent; border-radius: 0;
+  color: var(--cor-texto-suave); padding: 4px 0; font-size: .72rem;
+}
+.formas button:hover { background: transparent; color: var(--cor-texto); }
+.formas button[aria-pressed="true"] { color: var(--cor-primaria); border-bottom-color: var(--cor-primaria); }
+.pagamento { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px 14px; align-items: end; }
+.pagamento #valorPagamento { font-size: 1.15rem; text-align: right; font-variant-numeric: tabular-nums; }
+.lista-pagamentos { list-style: none; padding: 0; margin: 0; }
+.lista-pagamentos li {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 6px 0; border-bottom: 1px dashed var(--cor-borda); font-variant-numeric: tabular-nums;
+}
+
+.totais { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 0; padding-top: 6px; border-top: 1px solid var(--cor-texto); }
+.totais dt { color: var(--cor-texto-suave); }
+.totais dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.totais .total { font-family: var(--fonte-titulo); font-size: 1.9rem; color: var(--cor-texto); line-height: 1.2; }
+
+.concluir { padding: 15px; font-size: .82rem; }
+
+@media (max-width: 860px) {
+  .pdv { grid-template-columns: 1fr; }
+  .sacola { border-left: none; border-top: 1px solid var(--cor-borda); }
+  .buscas { justify-content: stretch; }
+  .buscas label { max-width: none; }
+}
+@media (max-width: 520px) {
+  .vitrine { padding: 16px 12px; }
+  .vitrine-topo h2 { font-size: 1.7rem; }
+  .cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }
+  .foto { aspect-ratio: 1 / 1; }
+  .foto em { font-size: 2.4rem; }
+  .cartao-peca small { font-size: .74rem; }
+  .sacola { padding: 18px 12px; }
+}

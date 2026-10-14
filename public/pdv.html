@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDV | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pdv.css">
+  <script type="module" src="js/pdv.js"></script>
+</head>
+<body>
+  <div class="pdv">
+    <p id="avisoCaixa" class="aviso-caixa" hidden>
+      Seu caixa está fechado. <a href="caixa.html">Abra o caixa</a> para registrar vendas.
+    </p>
+
+    <!-- Vitrine: produtos -->
+    <section class="vitrine" aria-label="Produtos">
+      <div class="vitrine-topo">
+        <h2>Nova venda</h2>
+        <div class="buscas">
+          <label>Código de barras
+            <input id="codigoBarras" inputmode="numeric" autocomplete="off" placeholder="Leia o código e aperte Enter" autofocus>
+          </label>
+          <label>Buscar peça
+            <input id="buscaProduto" type="search" autocomplete="off" placeholder="Nome, código ou cor">
+          </label>
+        </div>
+      </div>
+      <div id="cartoes" class="cartoes" aria-live="polite"></div>
+    </section>
+
+    <!-- Sacola: cliente, descontos, pagamento -->
+    <aside class="sacola" aria-label="Sacola">
+      <h2>Sacola <span id="contagem">0 peças</span></h2>
+      <div id="itens" class="itens"></div>
+
+      <div class="bloco">
+        <label>Cliente (opcional)
+          <input id="buscaCliente" list="sugestoesCliente" autocomplete="off" placeholder="Nome ou CPF, para pontos">
+          <datalist id="sugestoesCliente"></datalist>
+        </label>
+        <p id="infoCliente" class="suave"></p>
+        <label id="campoPontos" hidden>Resgatar pontos (100 pts = R$ 5,00)
+          <select id="pontosResgatar"></select>
+        </label>
+      </div>
+
+      <div class="bloco linha-campos">
+        <label id="campoVendedor" hidden>Vendedor <select id="vendedor"></select></label>
+        <label>Desconto (%) <input id="descontoPercentual" type="number" min="0" max="100" step="0.5" value="0"></label>
+      </div>
+      <p class="suave">Acima de 10% de desconto é preciso autorização do gerente.</p>
+
+      <div class="bloco">
+        <h3>Pagamento</h3>
+        <div class="formas" role="group" aria-label="Forma de pagamento">
+          <button type="button" data-forma="DINHEIRO" aria-pressed="true">Dinheiro</button>
+          <button type="button" data-forma="PIX" aria-pressed="false">PIX</button>
+          <button type="button" data-forma="DEBITO" aria-pressed="false">Débito</button>
+          <button type="button" data-forma="CREDITO" aria-pressed="false">Crédito</button>
+          <button type="button" data-forma="VALE_TROCA" aria-pressed="false">Vale-troca</button>
+        </div>
+        <form id="formPagamento" class="pagamento">
+          <label>Valor (R$)
+            <input id="valorPagamento" inputmode="decimal" autocomplete="off" placeholder="0,00">
+          </label>
+          <label id="campoParcelas" hidden>Parcelas
+            <select id="parcelas">
+              <option value="1">1x</option><option value="2">2x</option><option value="3">3x</option>
+              <option value="4">4x</option><option value="5">5x</option><option value="6">6x</option>
+            </select>
+          </label>
+          <label id="campoVale" hidden>Código do vale
+            <input id="codigoVale" maxlength="12" autocomplete="off">
+          </label>
+          <button type="submit" class="secundario">Adicionar</button>
+        </form>
+        <ul id="pagamentos" class="lista-pagamentos"></ul>
+      </div>
+
+      <dl class="totais">
+        <dt>Subtotal (com promoções)</dt><dd id="totalBruto">R$ 0,00</dd>
+        <dt>Descontos</dt><dd id="totalDesconto">R$ 0,00</dd>
+        <dt class="total">Total</dt><dd class="total" id="totalVenda">R$ 0,00</dd>
+        <dt>Pago</dt><dd id="totalPago">R$ 0,00</dd>
+        <dt id="rotuloRestante">Falta</dt><dd id="restante">R$ 0,00</dd>
+      </dl>
+      <p class="suave">Valores de prévia: o servidor recalcula tudo ao finalizar.</p>
+
+      <button type="button" id="finalizar" class="concluir">Concluir compra</button>
+      <button type="button" id="limpar" class="secundario">Esvaziar sacola</button>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </aside>
+  </div>
+
+  <dialog id="janelaConcluida">
+    <h3>Venda concluída</h3>
+    <p id="resumoVenda"></p>
+    <div class="botoes">
+      <button type="button" id="imprimir">Imprimir cupom</button>
+      <button type="button" id="whatsapp" class="secundario">WhatsApp</button>
+      <button type="button" id="email" class="secundario">E-mail</button>
+      <button type="button" id="novaVenda" class="secundario">Nova venda</button>
+    </div>
+  </dialog>
+</body>
+</html>

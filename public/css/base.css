@@ -1,0 +1,248 @@
+/* =====================================================================
+   Estilos comuns a todas as telas — direção visual "Vitrine"
+   (boutique: títulos em serifa, muito espaço em branco, verde-petróleo)
+   Ver nota 06 - HTML e CSS
+   ===================================================================== */
+
+/* Fontes guardadas no próprio projeto: funcionam sem internet (licença OFL em fonts/) */
+@font-face {
+  font-family: "DM Serif Display";
+  src: url("../fonts/dm-serif-display-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("../fonts/manrope-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --cor-fundo: #f6f6f3;          /* papel levemente acinzentado */
+  --cor-superficie: #fcfcfa;     /* cartões */
+  --cor-texto: #1d2a2a;          /* tinta */
+  --cor-texto-suave: #6b7774;
+  --cor-borda: #dfe2dc;
+  --cor-primaria: #0f5c5a;       /* verde-petróleo */
+  --cor-primaria-escura: #0b4644;
+  --cor-erro: #9b2c2c;
+  --cor-sucesso: #0f5c5a;
+  --cor-alerta: #8a6420;
+  --fundo-sucesso: #e3efe9;
+  --fundo-alerta: #f3ecdc;
+  --fundo-erro: #f6e3e1;
+  --fonte-titulo: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --fonte-texto: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --raio: 2px;
+}
+
+* { box-sizing: border-box; }
+
+/* O atributo hidden precisa vencer regras como label { display: flex } */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: var(--fonte-texto);
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+  line-height: 1.5;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 22px;
+}
+
+h1, h2, h3 { line-height: 1.15; font-family: var(--fonte-titulo); font-weight: 400; text-wrap: balance; }
+h2 { font-size: 1.6rem; margin: 0 0 14px; }
+h3 { font-size: 1.25rem; margin: 0 0 8px; }
+
+a { color: var(--cor-primaria); }
+
+/* ---------- Topo e menu (Flexbox) ---------- */
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 24px;
+  padding: 16px 22px;
+  background: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+}
+.topo h1 { font-size: 1.55rem; margin: 0; }
+.topo h1 a { color: var(--cor-texto); text-decoration: none; }
+.topo nav {
+  display: flex; flex-wrap: wrap; gap: 4px 20px; flex: 1;
+  font-size: .76rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.topo nav a { color: var(--cor-texto-suave); text-decoration: none; padding-bottom: 2px; border-bottom: 1.5px solid transparent; }
+.topo nav a:hover { color: var(--cor-texto); }
+.topo a[aria-current="page"] { color: var(--cor-primaria); border-bottom-color: var(--cor-primaria); font-weight: 700; }
+.usuario-logado { display: flex; align-items: baseline; gap: 10px; font-size: .85rem; color: var(--cor-texto-suave); }
+.usuario-logado button {
+  background: none; border: none; padding: 0; color: var(--cor-primaria); text-decoration: underline;
+  text-transform: none; letter-spacing: 0; font-size: .85rem; font-weight: 500;
+}
+.usuario-logado button:hover { background: none; color: var(--cor-primaria-escura); }
+
+/* ---------- Seções ---------- */
+.cartao {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.cabecalho-secao {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px;
+  margin-bottom: 14px;
+}
+.cabecalho-secao h2 { margin: 0; }
+
+/* ---------- Formulários: campos só com a linha de baixo ---------- */
+.grade-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px 18px;
+  align-items: end;
+}
+.grade-form .largo { grid-column: 1 / -1; }
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+label.inline {
+  flex-direction: row; align-items: center; gap: 10px;
+  font-size: .9rem; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--cor-texto);
+}
+
+input, select, textarea {
+  font: inherit;
+  font-size: .95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 8px 2px;
+  border: none;
+  border-bottom: 1px solid var(--cor-texto);
+  border-radius: 0;
+  background: transparent;
+  color: var(--cor-texto);
+  min-width: 0;
+}
+textarea { border: 1px solid var(--cor-borda); padding: 8px; }
+select { cursor: pointer; }
+input:focus, select:focus, textarea:focus { outline: none; border-bottom: 2px solid var(--cor-primaria); }
+input[type="checkbox"], input[type="radio"] { width: 18px; height: 18px; accent-color: var(--cor-primaria); }
+input[type="search"] { border: 1px solid var(--cor-borda); padding: 8px 10px; }
+input[type="search"]:focus { border-color: var(--cor-primaria); }
+
+button {
+  font: inherit;
+  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid var(--cor-texto);
+  border-radius: 999px;
+  background: var(--cor-texto);
+  color: var(--cor-superficie);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+button:hover { background: var(--cor-primaria); border-color: var(--cor-primaria); }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+button:disabled { opacity: .55; cursor: wait; }
+button.secundario { background: transparent; color: var(--cor-texto); }
+button.secundario:hover { background: var(--cor-texto); color: var(--cor-superficie); border-color: var(--cor-texto); }
+button.perigo { background: var(--cor-erro); border-color: var(--cor-erro); color: #fff; }
+button.perigo:hover { background: #7d2222; border-color: #7d2222; }
+button.pequeno { padding: 5px 12px; font-size: .68rem; }
+.botoes { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- Tabelas (rolagem lateral no celular) ---------- */
+.tabela-rolagem { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 8px; border-bottom: 1px solid var(--cor-borda); text-align: left; vertical-align: middle; }
+th {
+  font-size: .68rem; color: var(--cor-texto-suave); white-space: nowrap;
+  letter-spacing: .1em; text-transform: uppercase; font-weight: 700;
+}
+td.numero, th.numero { text-align: right; white-space: nowrap; }
+tbody tr:hover { background: #f1f2ee; }
+tfoot th { color: var(--cor-texto); font-size: .8rem; }
+.vazio { color: var(--cor-texto-suave); font-style: italic; padding: 14px 8px; }
+
+/* ---------- Mensagens e etiquetas ---------- */
+.mensagem { min-height: 1.4em; margin: 12px 0 0; font-weight: 600; }
+.mensagem.erro    { color: var(--cor-erro); }
+.mensagem.sucesso { color: var(--cor-sucesso); }
+
+.etiqueta {
+  display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: .72rem; font-weight: 700;
+  letter-spacing: .04em; background: #eceee9; color: var(--cor-texto-suave);
+}
+.etiqueta.ok      { background: var(--fundo-sucesso); color: var(--cor-sucesso); }
+.etiqueta.alerta  { background: var(--fundo-alerta); color: var(--cor-alerta); }
+.etiqueta.erro    { background: var(--fundo-erro); color: var(--cor-erro); }
+
+.suave { color: var(--cor-texto-suave); font-size: .9rem; }
+
+/* ---------- Painel: indicadores ---------- */
+.indicadores {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px;
+}
+.indicador { background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio); padding: 16px; }
+.indicador span { display: block; color: var(--cor-texto-suave); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+.indicador strong { font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.indicador.destaque { background: var(--cor-primaria); border-color: var(--cor-primaria); color: #fcfcfa; }
+.indicador.destaque span { color: rgba(252, 252, 250, .8); }
+
+.atalhos { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.atalhos a {
+  display: block; padding: 16px; background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio);
+  text-decoration: none; color: var(--cor-texto); font-family: var(--fonte-titulo); font-size: 1.2rem;
+}
+.atalhos a:hover { border-color: var(--cor-primaria); color: var(--cor-primaria); }
+.atalhos small { display: block; font-family: var(--fonte-texto); font-size: .8rem; color: var(--cor-texto-suave); margin-top: 2px; }
+
+/* ---------- Janela (dialog nativo do HTML) ---------- */
+dialog {
+  border: 1px solid var(--cor-borda); border-radius: var(--raio); padding: 24px; width: min(440px, calc(100vw - 32px));
+  background: var(--cor-superficie); color: var(--cor-texto); box-shadow: 0 18px 50px rgba(29, 42, 42, .22);
+}
+dialog::backdrop { background: rgba(29, 42, 42, .45); }
+dialog form { display: grid; gap: 14px; }
+dialog h3 { font-size: 1.5rem; margin: 0; }
+
+/* ---------- Login ---------- */
+.pagina-login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.pagina-login .cartao { width: min(400px, 100%); padding: 32px 28px; }
+.pagina-login h1 { color: var(--cor-texto); margin: 0; font-size: 2.3rem; }
+.pagina-login form { display: grid; gap: 18px; }
+.pagina-login button { padding: 13px; font-size: .8rem; }
+
+/* ---------- Ajustes finos para celular ---------- */
+@media (max-width: 480px) {
+  main { padding: 14px 12px; }
+  .cartao { padding: 14px; }
+  .topo { padding: 12px 14px; }
+  .topo h1 { font-size: 1.3rem; }
+  .grade-form button[type="submit"] { width: 100%; }
+}
+
+@media print {
+  .topo, .nao-imprimir { display: none !important; }
+  body { background: #fff; }
+}

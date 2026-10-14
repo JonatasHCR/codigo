@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuários | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/usuarios.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <div class="cabecalho-secao">
+        <h2 id="tituloForm">Novo usuário</h2>
+        <button type="button" id="cancelarEdicao" class="secundario pequeno" hidden>Cancelar edição</button>
+      </div>
+      <form id="formCadastro" class="grade-form" autocomplete="off">
+        <label>Nome <input name="nomeUsuario" required maxlength="100"></label>
+        <label>Login <input name="loginUsuario" required pattern="[A-Za-z0-9._]{3,30}" maxlength="30"></label>
+        <label>Senha <input name="senha" type="password" minlength="6" autocomplete="new-password" placeholder="Em branco = manter a atual"></label>
+        <label>Perfil
+          <select name="perfilAcesso" required>
+            <option value="VENDEDOR">Vendedor</option>
+            <option value="CAIXA">Caixa</option>
+            <option value="ESTOQUISTA">Estoquista</option>
+            <option value="GERENTE">Gerente</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </label>
+        <label>CPF <input name="cpfUsuario" inputmode="numeric" maxlength="14"></label>
+        <label>Comissão (%) <input name="percentualComissao" type="number" min="0" max="100" step="0.01"></label>
+        <label>Admissão <input name="dataAdmissao" type="date"></label>
+        <button type="submit">Salvar</button>
+      </form>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao">
+      <h2>Usuários</h2>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th class="numero">Comissão</th><th>Situação</th><th>Ações</th></tr></thead>
+          <tbody id="lista"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/painel.js"></script>
+</head>
+<body>
+  <main>
+    <h2 id="boasVindas">Painel</h2>
+
+    <section class="indicadores" id="indicadores" aria-label="Resumo"></section>
+
+    <section class="cartao" id="secaoAlertas" hidden>
+      <div class="cabecalho-secao">
+        <h2>⚠️ Estoque baixo</h2>
+        <a href="estoque.html">Registrar entrada →</a>
+      </div>
+      <div class="tabela-rolagem">
+        <table>
+          <thead>
+            <tr><th>Produto</th><th>Tamanho</th><th>Cor</th><th class="numero">Estoque</th><th class="numero">Mínimo</th><th>Desde</th></tr>
+          </thead>
+          <tbody id="listaAlertas"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cartao">
+      <h2>Acesso rápido</h2>
+      <nav class="atalhos" id="atalhos" aria-label="Atalhos"></nav>
+    </section>
+    <p id="mensagem" class="mensagem" role="status"></p>
+  </main>
+</body>
+</html>

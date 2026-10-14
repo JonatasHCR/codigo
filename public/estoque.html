@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estoque | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/estoque.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <h2>⚠️ Abaixo do estoque mínimo</h2>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Produto</th><th>Tamanho</th><th>Cor</th><th class="numero">Estoque</th><th class="numero">Mínimo</th><th>Ações</th></tr></thead>
+          <tbody id="listaAlertas"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cartao">
+      <h2>Entrada de mercadorias (nota fiscal)</h2>
+      <form id="formEntrada" class="grade-form">
+        <label>Fornecedor <select name="idFornecedor" id="selFornecedor" required></select></label>
+        <label>Nº da nota fiscal <input name="numeroNotaFiscal" maxlength="20"></label>
+        <label>Data da entrada <input name="dataEntrada" type="date" required></label>
+      </form>
+
+      <h3 style="margin-top:16px">Itens da nota</h3>
+      <form id="formItem" class="grade-form">
+        <label>Produto (código de barras ou nome)
+          <input id="buscaProduto" list="sugestoes" placeholder="Leia o código ou digite..." autocomplete="off">
+          <datalist id="sugestoes"></datalist>
+        </label>
+        <label>Quantidade <input name="quantidade" type="number" min="1" value="1" required></label>
+        <label>Custo unitário (R$) <input name="custoUnitario" type="number" min="0" step="0.01" required></label>
+        <button type="submit" class="secundario">Adicionar item</button>
+      </form>
+
+      <div class="tabela-rolagem" style="margin-top:12px">
+        <table>
+          <thead><tr><th>Produto</th><th class="numero">Qtd.</th><th class="numero">Custo</th><th class="numero">Subtotal</th><th></th></tr></thead>
+          <tbody id="itensEntrada"></tbody>
+          <tfoot><tr><th colspan="3">Total da nota</th><th class="numero" id="totalEntrada">R$ 0,00</th><th></th></tr></tfoot>
+        </table>
+      </div>
+      <div class="botoes" style="margin-top:12px">
+        <button type="button" id="registrar">Registrar entrada</button>
+      </div>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao">
+      <h2>Últimas entradas</h2>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Data</th><th>Nota</th><th>Fornecedor</th><th class="numero">Itens</th><th class="numero">Valor</th><th>Registrado por</th></tr></thead>
+          <tbody id="listaEntradas"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

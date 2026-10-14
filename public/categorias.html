@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Categorias | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/categorias.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <div class="cabecalho-secao">
+        <h2 id="tituloForm">Nova categoria</h2>
+        <button type="button" id="cancelarEdicao" class="secundario pequeno" hidden>Cancelar edição</button>
+      </div>
+      <form id="formCadastro" class="grade-form">
+        <label>Nome <input name="nomeCategoria" required maxlength="50" placeholder="Ex.: Tênis"></label>
+        <label>Tipo
+          <select name="tipoCategoria" required>
+            <option value="ROUPA">Roupa</option>
+            <option value="CALCADO">Calçado</option>
+            <option value="ACESSORIO">Acessório</option>
+          </select>
+        </label>
+        <label class="largo">Descrição <input name="descricaoCategoria" maxlength="200"></label>
+        <button type="submit">Salvar</button>
+      </form>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao">
+      <h2>Categorias</h2>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th><th>Ações</th></tr></thead>
+          <tbody id="lista"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

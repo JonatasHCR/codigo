@@ -1,0 +1,20 @@
+{
+    "name": "loja-modelo/sistema",
+    "description": "Sistema de gestão para loja de roupas e calçados (PDV, estoque, caixa e relatórios)",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "setasign/fpdf": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

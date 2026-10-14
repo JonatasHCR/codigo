@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vendas | Loja Modelo</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <script type="module" src="js/vendas.js"></script>
+</head>
+<body>
+  <main>
+    <section class="cartao">
+      <h2>Vendas</h2>
+      <form id="formFiltros" class="grade-form">
+        <label>Nº da venda <input name="idVenda" type="number" min="1"></label>
+        <label>Data <input name="data" type="date"></label>
+        <label>Situação
+          <select name="status">
+            <option value="">Todas</option>
+            <option value="FINALIZADA">Finalizadas</option>
+            <option value="CANCELADA">Canceladas</option>
+          </select>
+        </label>
+      </form>
+      <div class="tabela-rolagem" style="margin-top:12px">
+        <table>
+          <thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Vendedor</th><th class="numero">Total</th><th>Situação</th><th></th></tr></thead>
+          <tbody id="lista"></tbody>
+        </table>
+      </div>
+      <p id="mensagem" class="mensagem" role="status"></p>
+    </section>
+
+    <section class="cartao" id="secaoDetalhe" hidden>
+      <div class="cabecalho-secao">
+        <h2 id="tituloDetalhe">Venda</h2>
+        <div class="botoes" id="acoesDetalhe"></div>
+      </div>
+      <p id="infoDetalhe" class="suave"></p>
+      <div class="tabela-rolagem">
+        <table>
+          <thead><tr><th>Produto</th><th class="numero">Qtd.</th><th class="numero">Preço</th><th class="numero">Promoção</th><th class="numero">Subtotal</th></tr></thead>
+          <tbody id="itensDetalhe"></tbody>
+        </table>
+      </div>
+      <h3 style="margin-top:14px">Pagamentos</h3>
+      <ul id="pagamentosDetalhe"></ul>
+      <div id="trocasDetalhe"></div>
+    </section>
+  </main>
+</body>
+</html>
