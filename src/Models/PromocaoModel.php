@@ -27,14 +27,14 @@ final class PromocaoModel extends Model
     private static function valores(array $p): array
     {
         return [$p['nomePromocao'], $p['tipoDesconto'], $p['valorDesconto'], $p['dataInicio'], $p['dataFim'],
-                self::ouNulo($p['idCategoria'] ?? null), self::ouNulo($p['idProduto'] ?? null)];
+                $p['abrangencia'], self::ouNulo($p['idCategoria'] ?? null), self::ouNulo($p['idProduto'] ?? null)];
     }
 
     public static function criar(array $p): int
     {
         return self::inserir(
-            'INSERT INTO tb_promocao (nomePromocao, tipoDesconto, valorDesconto, dataInicio, dataFim, idCategoria, idProduto)
-             VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO tb_promocao (nomePromocao, tipoDesconto, valorDesconto, dataInicio, dataFim, abrangencia, idCategoria, idProduto)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             self::valores($p)
         );
     }
@@ -44,7 +44,7 @@ final class PromocaoModel extends Model
         return self::executar(
             'UPDATE tb_promocao
                 SET nomePromocao = ?, tipoDesconto = ?, valorDesconto = ?, dataInicio = ?, dataFim = ?,
-                    idCategoria = ?, idProduto = ?
+                    abrangencia = ?, idCategoria = ?, idProduto = ?
               WHERE idPromocao = ?',
             [...self::valores($p), $id]
         ) > 0;
@@ -56,18 +56,18 @@ final class PromocaoModel extends Model
     }
 
     /**
-     * RF11: melhor promoção ativa HOJE para um produto (direta ou pela categoria).
+     * RF11: melhor promoção ativa HOJE para um produto (da loja toda, da categoria dele ou dele mesmo).
      * Devolve o desconto por unidade, nunca maior que o próprio preço.
      * Dentro de uma venda, roda na mesma conexão — e portanto na mesma transação.
      */
     public static function descontoUnitario(array $produto): array
     {
         $promocoes = self::todos(
-            'SELECT idPromocao, nomePromocao, tipoDesconto, valorDesconto
+            "SELECT idPromocao, nomePromocao, tipoDesconto, valorDesconto
                FROM tb_promocao
               WHERE statusPromocao = TRUE
                 AND CURDATE() BETWEEN dataInicio AND dataFim
-                AND (idProduto = ? OR idCategoria = ?)',
+                AND (abrangencia = 'TODOS' OR idProduto = ? OR idCategoria = ?)",
             [$produto['idProduto'], $produto['idCategoria']]
         );
         $preco = (float) $produto['precoVenda'];

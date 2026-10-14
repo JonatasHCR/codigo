@@ -8,6 +8,7 @@ criarCrud({
   endpoint: '/api/categorias',
   idCampo: 'idCategoria',
   nomeItem: 'categoria',
+  tituloNovo: 'Nova categoria',
   podeEditar: ['ADMIN', 'GERENTE', 'ESTOQUISTA'].includes(usuario.perfil),
   acaoInativar: ['ADMIN', 'GERENTE'].includes(usuario.perfil) ? { rota: 'inativar', texto: 'Inativar' } : null,
   colunas: [

@@ -8,10 +8,11 @@ import {
  * do CRUD de Clientes (notas 05 e 07). Usada por fornecedores, categorias, promoções e usuários.
  *
  * config = {
- *   endpoint: '/api/fornecedores', idCampo: 'idFornecedor', nomeItem: 'fornecedor',
+ *   endpoint: '/api/fornecedores', idCampo: 'idFornecedor', nomeItem: 'fornecedor', tituloNovo?: 'Nova promoção',
  *   colunas: [{ campo, titulo, formatar?, classe? }],
  *   podeEditar: boolean, acaoInativar?: { rota, texto }, acoesExtras?: (item, recarregar) => [botões],
- *   antesDeEnviar?: (dados) => mensagemDeErro | undefined
+ *   antesDeEnviar?: (dados) => mensagemDeErro | undefined,
+ *   aoMudarFormulario?: () => void   // depois de limpar ou preencher o form (ex.: mostrar/esconder campos)
  * }
  */
 export function criarCrud(config) {
@@ -26,13 +27,15 @@ export function criarCrud(config) {
   function modoNovo() {
     idEditando = null;
     form.reset();
-    tituloForm.textContent = `Novo ${config.nomeItem}`;
+    tituloForm.textContent = config.tituloNovo || `Novo ${config.nomeItem}`;
     botaoCancelar.hidden = true;
+    config.aoMudarFormulario?.();
   }
 
   async function editar(id) {
     const item = await api(`${config.endpoint}/${id}`);
     preencherFormulario(form, item);
+    config.aoMudarFormulario?.();
     idEditando = id;
     tituloForm.textContent = `Editando ${config.nomeItem} #${id}`;
     botaoCancelar.hidden = false;

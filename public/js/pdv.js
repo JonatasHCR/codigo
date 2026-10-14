@@ -1,6 +1,6 @@
 import { api, enviar } from './api.js';
 import { iniciarPagina } from './menu.js';
-import { formatarMoeda, nome } from './formatar.js';
+import { formatarMoeda, formatarData, nome } from './formatar.js';
 import { pedirAutorizacao } from './autorizacao.js';
 import { botao, mostrarMensagem as mostrar, preencherSelect, debounce } from './ui.js';
 
@@ -18,6 +18,7 @@ let formaAtual = 'DINHEIRO';
 let cliente = null;              // { idCliente, nomeCliente, saldoPontos }
 let clientesSugeridos = new Map();
 let promocoes = [];
+let valeConsultado = null;       // { codigo, disponivel, dataValidade } — vale digitado no pagamento
 
 const usuario = await iniciarPagina();
 
@@ -45,12 +46,13 @@ function pintar(elemento, produto) {
   }
 }
 
-// Mesma regra do servidor (RF11): a maior promoção ativa do produto ou da categoria
+// Mesma regra do servidor (RF11): a maior promoção ativa da loja toda, da categoria ou do produto
 function descontoPromocao(produto) {
   const preco = Number(produto.precoVenda);
   let melhor = 0;
   for (const p of promocoes) {
-    if (p.idProduto !== produto.idProduto && p.idCategoria !== produto.idCategoria) continue;
+    const vale = p.abrangencia === 'TODOS' || p.idProduto === produto.idProduto || p.idCategoria === produto.idCategoria;
+    if (!vale) continue;
     const valor = Number(p.valorDesconto);
     melhor = Math.max(melhor, Math.min(preco, p.tipoDesconto === 'PERCENTUAL' ? arredondar(preco * valor / 100) : valor));
   }
@@ -296,11 +298,19 @@ function atualizarTotais() {
   $('#totalDesconto').textContent = `− ${formatarMoeda(t.desconto)}`;
   $('#totalVenda').textContent = formatarMoeda(t.total);
   $('#totalPago').textContent = formatarMoeda(t.pago);
-  $('#rotuloRestante').textContent = t.restante >= 0 ? 'Falta' : 'Troco';
+  $('#rotuloRestante').textContent = t.restante >= 0 ? 'Falta pagar' : 'Troco';
   $('#restante').textContent = formatarMoeda(Math.abs(t.restante));
+  // Já há pagamento lançado e ainda não cobre o total: destaca o que falta
+  const pendente = pagamentos.length > 0 && t.restante > 0.001;
+  $('#rotuloRestante').classList.toggle('pendente', pendente);
+  $('#restante').classList.toggle('pendente', pendente);
   if (!$('#valorPagamento').matches(':focus')) {
-    $('#valorPagamento').value = t.restante > 0 ? paraTexto(t.restante) : '';
+    // Com vale-troca, sugere só o que o vale cobre; nas outras formas, o que falta
+    const sugestao = formaAtual === 'VALE_TROCA' && valeConsultado
+      ? Math.min(valeConsultado.disponivel, t.restante) : t.restante;
+    $('#valorPagamento').value = sugestao > 0 ? paraTexto(sugestao) : '';
   }
+  if (formaAtual === 'VALE_TROCA' && valeConsultado) explicarVale();
 }
 
 $('#descontoPercentual').addEventListener('input', atualizarTotais);
@@ -315,8 +325,79 @@ document.querySelectorAll('[data-forma]').forEach((b) => {
     document.querySelectorAll('[data-forma]').forEach((x) => x.setAttribute('aria-pressed', x === b));
     $('#campoParcelas').hidden = formaAtual !== 'CREDITO';
     $('#campoVale').hidden = formaAtual !== 'VALE_TROCA';
-    $('#valorPagamento').focus();
+    if (formaAtual === 'VALE_TROCA') {
+      $('#infoVale').hidden = !valeConsultado;
+      $('#codigoVale').focus();
+    } else {
+      $('#infoVale').hidden = true;
+      $('#valorPagamento').focus();
+    }
+    atualizarTotais();
   });
+});
+
+// ---------------------------------------------------------------------------
+// Vale-troca (RF14): mostra o saldo ANTES de lançar e quanto ele cobre da venda
+// ---------------------------------------------------------------------------
+// Quanto deste vale já foi lançado nesta mesma venda
+const usadoDoVale = (codigo) =>
+  arredondar(pagamentos.filter((p) => p.codigoVale === codigo).reduce((s, p) => s + p.valorPago, 0));
+
+function infoVale(texto, tipo = '') {
+  const info = $('#infoVale');
+  info.className = `info-vale ${tipo}`;
+  info.replaceChildren(...texto);   // lista de textos e <strong>
+  info.hidden = false;
+}
+const forte = (texto) => Object.assign(document.createElement('strong'), { textContent: texto });
+
+function explicarVale() {
+  const { disponivel, dataValidade } = valeConsultado;
+  const { restante } = calcularTotais();
+  const partes = ['Saldo do vale: ', forte(formatarMoeda(disponivel)), ` · válido até ${formatarData(dataValidade)}. `];
+  if (disponivel <= 0) {
+    return infoVale([...partes, 'Este vale já foi todo usado nesta venda.'], 'erro');
+  }
+  if (restante <= 0) return infoVale([...partes, 'A venda já está paga.']);
+  if (disponivel < restante) {
+    return infoVale([...partes, 'Ele cobre só parte da compra: depois ainda ', forte(`faltará ${formatarMoeda(restante - disponivel)}`),
+      ', a pagar com outra forma.'], 'aviso');
+  }
+  const sobra = arredondar(disponivel - restante);
+  infoVale([...partes, 'Ele cobre a compra inteira',
+    sobra > 0 ? ` e sobrarão ${formatarMoeda(sobra)} no vale para outra compra.` : '.']);
+}
+
+let esperaVale;
+async function consultarVale() {
+  const codigo = $('#codigoVale').value.trim().toUpperCase();
+  valeConsultado = null;
+  if (!codigo) { $('#infoVale').hidden = true; return null; }
+  try {
+    const vale = await api(`/api/trocas/vales/${encodeURIComponent(codigo)}`);
+    if ($('#codigoVale').value.trim().toUpperCase() !== codigo) return null;   // digitou outro código enquanto buscava
+    if (vale.statusVale !== 'ATIVO') {
+      infoVale([`Vale ${(nome(vale.statusVale) || vale.statusVale).toLowerCase()}: não pode ser usado.`], 'erro');
+      return null;
+    }
+    valeConsultado = {
+      codigo, dataValidade: vale.dataValidade,
+      disponivel: arredondar(Number(vale.saldoVale) - usadoDoVale(codigo)),
+    };
+    $('#valorPagamento').blur();
+    atualizarTotais();   // sugere o valor e mostra a explicação
+    return valeConsultado;
+  } catch (erro) {
+    infoVale([erro.message], 'erro');
+    return null;
+  }
+}
+
+$('#codigoVale').addEventListener('input', () => {
+  valeConsultado = null;
+  $('#infoVale').hidden = true;
+  clearTimeout(esperaVale);
+  if ($('#codigoVale').value.trim().length >= 6) esperaVale = setTimeout(consultarVale, 400);
 });
 
 $('#formPagamento').addEventListener('submit', async (evento) => {
@@ -326,23 +407,40 @@ $('#formPagamento').addEventListener('submit', async (evento) => {
 
   const pagamento = { formaPagamento: formaAtual, valorPago };
   if (formaAtual === 'CREDITO') pagamento.numeroParcelas = Number($('#parcelas').value);
+  const { restante } = calcularTotais();
   if (formaAtual === 'VALE_TROCA') {
     const codigo = $('#codigoVale').value.trim().toUpperCase();
-    try {
-      const vale = await api(`/api/trocas/vales/${encodeURIComponent(codigo)}`);
-      if (vale.statusVale !== 'ATIVO') return mostrarMensagem(`Vale ${(nome(vale.statusVale) || vale.statusVale).toLowerCase()}`);
-      if (valorPago > Number(vale.saldoVale)) return mostrarMensagem(`Saldo do vale: ${formatarMoeda(vale.saldoVale)}`);
-      pagamento.codigoVale = codigo;
-    } catch (erro) {
-      return mostrarMensagem(erro.message);
+    if (!codigo) return mostrarMensagem('Digite o código do vale-troca');
+    const vale = valeConsultado?.codigo === codigo ? valeConsultado : await consultarVale();
+    if (!vale) return mostrarMensagem('Vale-troca inválido');
+    if (valorPago > vale.disponivel + 0.001) {
+      return mostrarMensagem(`O vale só tem ${formatarMoeda(vale.disponivel)} de saldo. Lance até esse valor e pague o resto com outra forma.`);
     }
-  }
-  if (formaAtual !== 'DINHEIRO' && valorPago > calcularTotais().restante + 0.001) {
+    if (valorPago > restante + 0.001) {
+      return mostrarMensagem(`Falta pagar só ${formatarMoeda(restante)}. Use esse valor do vale; o resto do saldo continua no vale.`);
+    }
+    pagamento.codigoVale = codigo;
+    pagamento.saldoDepois = arredondar(vale.disponivel - valorPago);   // só para mostrar na lista
+  } else if (formaAtual !== 'DINHEIRO' && valorPago > restante + 0.001) {
     return mostrarMensagem('Só pagamento em dinheiro pode ser maior que o valor que falta (troco)');
   }
   pagamentos.push(pagamento);
-  $('#codigoVale').value = '';
   $('#valorPagamento').blur();
+
+  if (formaAtual === 'VALE_TROCA') {
+    $('#codigoVale').value = '';
+    valeConsultado = null;
+    $('#infoVale').hidden = true;
+    const falta = arredondar(restante - valorPago);
+    if (falta > 0) {
+      // O vale não cobriu tudo: avisa e já deixa pronto para receber o resto em dinheiro
+      document.querySelector('[data-forma="DINHEIRO"]').click();
+      $('#valorPagamento').blur();
+      desenharPagamentos();
+      return mostrarMensagem(`Vale de ${formatarMoeda(valorPago)} aplicado. Ainda falta pagar ${formatarMoeda(falta)}: escolha outra forma de pagamento.`, 'alerta');
+    }
+  }
+  mostrarMensagem('');
   desenharPagamentos();
 });
 
@@ -352,6 +450,12 @@ function desenharPagamentos() {
     const texto = document.createElement('span');
     const extra = p.numeroParcelas > 1 ? ` em ${p.numeroParcelas}x` : p.codigoVale ? ` (${p.codigoVale})` : '';
     texto.textContent = `${nome(p.formaPagamento)}${extra}: ${formatarMoeda(p.valorPago)}`;
+    if (p.codigoVale) {
+      const saldo = document.createElement('span');
+      saldo.className = 'saldo-vale';
+      saldo.textContent = p.saldoDepois > 0 ? `Ficam ${formatarMoeda(p.saldoDepois)} no vale` : 'Vale usado por inteiro';
+      texto.append(saldo);
+    }
     li.append(texto, botao('Remover', () => { pagamentos.splice(i, 1); desenharPagamentos(); }));
     return li;
   }));
@@ -370,7 +474,7 @@ $('#finalizar').addEventListener('click', async (evento) => {
   const corpo = {
     idCliente: cliente?.idCliente || null,
     itens: [...carrinho.values()].map(({ produto, quantidade }) => ({ idVariacao: produto.idVariacao, quantidade })),
-    pagamentos,
+    pagamentos: pagamentos.map(({ saldoDepois, ...p }) => p),   // saldoDepois é só da tela
     descontoPercentual: t.percentual,
     pontosResgatar: t.pontos,
   };
@@ -418,6 +522,9 @@ function vendaConcluida(venda) {
 function limparVenda() {
   carrinho.clear();
   pagamentos = [];
+  valeConsultado = null;
+  $('#codigoVale').value = '';
+  $('#infoVale').hidden = true;
   $('#buscaCliente').value = '';
   $('#descontoPercentual').value = 0;
   selecionarCliente(null);

@@ -188,6 +188,7 @@ tfoot th { color: var(--cor-texto); font-size: .8rem; }
 .mensagem { min-height: 1.4em; margin: 12px 0 0; font-weight: 600; }
 .mensagem.erro    { color: var(--cor-erro); }
 .mensagem.sucesso { color: var(--cor-sucesso); }
+.mensagem.alerta  { color: var(--cor-alerta); }
 
 .etiqueta {
   display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: .72rem; font-weight: 700;

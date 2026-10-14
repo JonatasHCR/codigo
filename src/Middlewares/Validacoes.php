@@ -156,17 +156,25 @@ final class Validacoes
     // RF11
     public static function promocao(array $dados): array
     {
+        // Sem abrangência informada, deduz pelo campo preenchido (produto ou categoria)
+        $dados['abrangencia'] ??= !empty($dados['idProduto']) ? 'PRODUTO' : (!empty($dados['idCategoria']) ? 'CATEGORIA' : null);
         $v = (new Validador($dados))
             ->texto('nomePromocao', 'Informe o nome da promoção', 80)
             ->opcao('tipoDesconto', ['PERCENTUAL', 'VALOR_FIXO'], 'Tipo de desconto inválido')
             ->decimal('valorDesconto', 'Desconto inválido', maiorQue: 0)
             ->data('dataInicio', 'Data inicial inválida')
             ->data('dataFim', 'Data final inválida')
+            ->opcao('abrangencia', ['TODOS', 'CATEGORIA', 'PRODUTO'], 'Escolha onde a promoção vale')
             ->inteiro('idCategoria', 'Categoria inválida', minimo: 1, obrigatorio: false)
             ->inteiro('idProduto', 'Produto inválido', minimo: 1, obrigatorio: false);
+        $abrangencia = $v->valor('abrangencia');
         $v->regra($v->valor('tipoDesconto') !== 'PERCENTUAL' || $v->valor('valorDesconto') <= 100, 'Percentual máximo é 100%')
           ->regra($v->valor('dataFim') >= $v->valor('dataInicio'), 'A data final deve ser depois da inicial')
-          ->regra((bool) ($v->valor('idCategoria') ?: false) !== (bool) ($v->valor('idProduto') ?: false), 'Escolha uma categoria OU um produto');
+          ->regra($abrangencia !== 'CATEGORIA' || $v->valor('idCategoria'), 'Escolha a categoria da promoção')
+          ->regra($abrangencia !== 'PRODUTO' || $v->valor('idProduto'), 'Escolha o produto da promoção');
+        // Guarda só o campo que combina com a abrangência (o outro fica vazio)
+        if ($abrangencia !== 'CATEGORIA') $v->definir('idCategoria', null);
+        if ($abrangencia !== 'PRODUTO') $v->definir('idProduto', null);
         return $v->dados();
     }
 

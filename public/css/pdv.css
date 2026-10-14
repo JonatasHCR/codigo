@@ -82,6 +82,17 @@
   padding: 6px 0; border-bottom: 1px dashed var(--cor-borda); font-variant-numeric: tabular-nums;
 }
 
+/* Vale-troca: saldo do vale e quanto ele cobre da venda */
+.info-vale {
+  margin: 8px 0 0; padding: 8px 10px; font-size: .9rem; line-height: 1.45;
+  border-left: 3px solid var(--cor-primaria); background: color-mix(in srgb, var(--cor-primaria) 7%, transparent);
+}
+.info-vale strong { font-variant-numeric: tabular-nums; }
+.info-vale.aviso { border-left-color: var(--cor-alerta); background: color-mix(in srgb, var(--cor-alerta) 9%, transparent); }
+.info-vale.erro { border-left-color: var(--cor-erro); background: color-mix(in srgb, var(--cor-erro) 8%, transparent); color: var(--cor-erro); }
+.lista-pagamentos .saldo-vale { display: block; font-size: .8rem; color: var(--cor-texto-suave); }
+.totais .pendente { color: var(--cor-erro); font-weight: 700; }
+
 .totais { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 0; padding-top: 6px; border-top: 1px solid var(--cor-texto); }
 .totais dt { color: var(--cor-texto-suave); }
 .totais dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }

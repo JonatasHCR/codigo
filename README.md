@@ -75,7 +75,7 @@ docker/            ← apache.conf e php.ini usados na imagem
 ```bash
 npm run smoke
 ```
-Teste de ponta a ponta da API (**75 verificações**), escrito em JavaScript e rodado com o Node.js do PC: ele só chama a API por HTTP,
+Teste de ponta a ponta da API (**80 verificações**), escrito em JavaScript e rodado com o Node.js do PC: ele só chama a API por HTTP,
 então funciona com qualquer linguagem no servidor. Cobre login e bloqueio, permissões, cadastros, grade, entrada de estoque,
 promoção, venda com transação (inclusive **rollback** com estoque insuficiente), troco, parcelas, autorização do gerente,
 troca, devolução, vale-troca, fidelidade, cancelamento, caixa, os 7 relatórios em JSON/PDF/CSV e LGPD.

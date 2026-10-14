@@ -15,7 +15,7 @@
         <h2 id="tituloForm">Nova promoção</h2>
         <button type="button" id="cancelarEdicao" class="secundario pequeno" hidden>Cancelar edição</button>
       </div>
-      <p class="suave">A promoção ativa é aplicada <b>automaticamente</b> no PDV aos produtos escolhidos (RF11).</p>
+      <p class="suave">A promoção ativa é aplicada <b>automaticamente</b> no PDV aos produtos escolhidos (RF11): na loja toda, numa categoria ou num produto. Se mais de uma valer para a mesma peça, fica a <b>maior</b> (elas não se somam).</p>
       <form id="formCadastro" class="grade-form">
         <label>Nome <input name="nomePromocao" required maxlength="80" placeholder="Ex.: 20% em sandálias"></label>
         <label>Tipo de desconto
@@ -27,8 +27,15 @@
         <label>Desconto <input name="valorDesconto" type="number" min="0.01" step="0.01" required></label>
         <label>Início <input name="dataInicio" type="date" required></label>
         <label>Fim <input name="dataFim" type="date" required></label>
-        <label>Categoria <select name="idCategoria" id="selCategoria"></select></label>
-        <label>…ou produto <select name="idProduto" id="selProduto"></select></label>
+        <label>Vale para
+          <select name="abrangencia" id="selAbrangencia" required>
+            <option value="TODOS">Todos os produtos (loja toda)</option>
+            <option value="CATEGORIA">Uma categoria</option>
+            <option value="PRODUTO">Um produto</option>
+          </select>
+        </label>
+        <label id="campoCategoria">Categoria <select name="idCategoria" id="selCategoria"></select></label>
+        <label id="campoProduto">Produto <select name="idProduto" id="selProduto"></select></label>
         <button type="submit">Salvar</button>
       </form>
       <p id="mensagem" class="mensagem" role="status"></p>

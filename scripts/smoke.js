@@ -177,6 +177,26 @@ async function main() {
   const comPromo = await caixa.get(`/api/produtos/codigo/${codigoM}`);
   verificar('Prévia do PDV já traz o desconto (R$ 10,00)', igual(comPromo.dados.descontoPromocao, 10));
 
+  // Promoção na loja toda: vale para todos os produtos; entre duas, fica a MAIOR (não se somam)
+  verificar('Promoção por categoria sem escolher a categoria é recusada (400)', (await admin.post('/api/promocoes', {
+    nomePromocao: 'Sem categoria', tipoDesconto: 'PERCENTUAL', valorDesconto: 5, dataInicio: hoje(), dataFim: hoje(), abrangencia: 'CATEGORIA',
+  })).status === 400);
+  const promoLoja = await admin.post('/api/promocoes', {
+    nomePromocao: 'Loja toda 5%', tipoDesconto: 'PERCENTUAL', valorDesconto: 5, dataInicio: hoje(), dataFim: hoje(), abrangencia: 'TODOS',
+  });
+  verificar('Cadastra promoção para todos os produtos', promoLoja.status === 201, JSON.stringify(promoLoja.dados));
+  verificar('Com 10% no produto e 5% na loja, vale a maior (R$ 10,00)',
+    igual((await caixa.get(`/api/produtos/codigo/${codigoM}`)).dados.descontoPromocao, 10));
+  const promoLoja50 = await admin.post('/api/promocoes', {
+    nomePromocao: 'Loja toda 50%', tipoDesconto: 'PERCENTUAL', valorDesconto: 50, dataInicio: hoje(), dataFim: hoje(), abrangencia: 'TODOS',
+  });
+  verificar('Promoção da loja toda maior que a do produto passa a valer (R$ 50,00)',
+    igual((await caixa.get(`/api/produtos/codigo/${codigoM}`)).dados.descontoPromocao, 50));
+  await admin.patch(`/api/promocoes/${promoLoja.dados.idPromocao}/desativar`);
+  await admin.patch(`/api/promocoes/${promoLoja50.dados.idPromocao}/desativar`);
+  verificar('Desativadas, volta a valer só a do produto (R$ 10,00)',
+    igual((await caixa.get(`/api/produtos/codigo/${codigoM}`)).dados.descontoPromocao, 10));
+
   // ------------------------------------------------------------------
   titulo('RF15 — Caixa');
   let caixaAtual = (await caixa.get('/api/caixa/atual')).dados;

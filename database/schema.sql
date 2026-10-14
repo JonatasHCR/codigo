@@ -182,13 +182,20 @@ CREATE TABLE tb_promocao (
   valorDesconto  DECIMAL(10,2) NOT NULL,
   dataInicio     DATE NOT NULL,
   dataFim        DATE NOT NULL,
+  -- Onde vale: TODOS os produtos (loja toda), uma CATEGORIA ou um PRODUTO
+  abrangencia    ENUM('TODOS', 'CATEGORIA', 'PRODUTO') NOT NULL DEFAULT 'PRODUTO',
   idCategoria    INT NULL,
   idProduto      INT NULL,
   statusPromocao BOOLEAN NOT NULL DEFAULT TRUE,
   FOREIGN KEY (idCategoria) REFERENCES tb_categoria(idCategoria),
   FOREIGN KEY (idProduto)   REFERENCES tb_produto(idProduto),
   CONSTRAINT ck_promocao_datas CHECK (dataFim >= dataInicio),
-  CONSTRAINT ck_promocao_valor CHECK (valorDesconto > 0)
+  CONSTRAINT ck_promocao_valor CHECK (valorDesconto > 0),
+  -- A abrangência e os campos preenchidos precisam combinar
+  CONSTRAINT ck_promocao_alvo CHECK (
+       (abrangencia = 'TODOS'     AND idCategoria IS NULL     AND idProduto IS NULL)
+    OR (abrangencia = 'CATEGORIA' AND idCategoria IS NOT NULL AND idProduto IS NULL)
+    OR (abrangencia = 'PRODUTO'   AND idProduto IS NOT NULL   AND idCategoria IS NULL))
 ) ENGINE=InnoDB;
 
 -- RF15
