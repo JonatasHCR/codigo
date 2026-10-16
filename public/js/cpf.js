@@ -1,4 +1,4 @@
-// Mesma função do back-end (src/utils/cpf.js). A duplicação é proposital:
+// Mesma função do back-end (src/Utils/Cpf.php). A duplicação é proposital:
 // o front valida para a COMODIDADE do usuário; o back valida para a SEGURANÇA (RNF09).
 export function cpfValido(cpf) {
   cpf = String(cpf).replace(/\D/g, '');
