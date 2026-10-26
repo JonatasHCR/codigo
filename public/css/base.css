@@ -200,6 +200,22 @@ tfoot th { color: var(--cor-texto); font-size: .8rem; }
 
 .suave { color: var(--cor-texto-suave); font-size: .9rem; }
 
+/* ---------- Fotos dos produtos ---------- */
+.miniatura {
+  display: block; width: 36px; height: 45px; border-radius: var(--raio);
+  background: #eceee9 center / cover no-repeat;
+}
+.campo-foto { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.campo-foto > div:last-child { flex: 1 1 220px; display: grid; gap: 8px; justify-items: start; }
+.campo-foto .suave { margin: 0; font-size: .8rem; }
+.previa-foto {
+  width: 120px; aspect-ratio: 4 / 5; border-radius: var(--raio); border: 1px solid var(--cor-borda);
+  background: #eceee9 center / cover no-repeat; display: grid; place-items: center;
+}
+.previa-foto span { display: none; color: var(--cor-texto-suave); font-size: .75rem; }
+.previa-foto.vazia span { display: block; }
+input[type="file"] { border: none; padding: 6px 0; font-size: .85rem; }
+
 /* ---------- Painel: indicadores ---------- */
 .indicadores {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px;

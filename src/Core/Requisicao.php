@@ -38,6 +38,12 @@ final class Requisicao
         return $this->params[$nome] ?? '';
     }
 
+    /** Arquivo enviado num formulário multipart ($_FILES), ou null */
+    public function arquivo(string $nome): ?array
+    {
+        return $_FILES[$nome] ?? null;
+    }
+
     /** Usuário logado (guardado na sessão pelo login) ou null */
     public function usuario(): ?array
     {

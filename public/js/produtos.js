@@ -1,4 +1,4 @@
-import { api, enviar } from './api.js';
+import { api, enviar, enviarArquivo } from './api.js';
 import { iniciarPagina } from './menu.js';
 import { formatarMoeda } from './formatar.js';
 import {
@@ -12,11 +12,24 @@ const mensagem = document.querySelector('#mensagem');
 const formProduto = document.querySelector('#formProduto');
 const formVariacao = document.querySelector('#formVariacao');
 const listaGrade = document.querySelector('#listaGrade');
+const previaFoto = document.querySelector('#previaFoto');
+const arquivoFoto = document.querySelector('#arquivoFoto');
+const botaoRemoverFoto = document.querySelector('#removerFoto');
 
 const usuario = await iniciarPagina();
 const editor = ['ADMIN', 'GERENTE', 'ESTOQUISTA'].includes(usuario.perfil);
 let idProdutoEditando = null;
 let idVariacaoEditando = null;
+let fotoAtual = null;        // caminho da foto já salva no servidor
+let fotoEscolhida = null;    // arquivo escolhido que ainda vai ser enviado ao salvar
+
+// Miniatura da foto (ou um quadro vazio quando o produto não tem foto)
+function miniatura(caminho) {
+  const span = document.createElement('span');
+  span.className = 'miniatura';
+  if (caminho) span.style.backgroundImage = `url("${encodeURI(caminho)}")`;
+  return span;
+}
 
 const categorias = await api('/api/categorias');
 preencherSelect(document.querySelector('#filtroCategoria'), categorias, 'idCategoria', 'nomeCategoria', 'Todas');
@@ -32,6 +45,7 @@ async function consultar() {
   for (const p of produtos) {
     if (!p.variacoes.length) {
       const tr = document.createElement('tr');
+      celula(tr, miniatura(p.fotoProduto));
       celula(tr, p.nomeProduto);
       celula(tr, p.nomeCategoria);
       const aviso = celula(tr, etiqueta('sem grade cadastrada', 'alerta'));
@@ -41,6 +55,7 @@ async function consultar() {
     }
     for (const v of p.variacoes) {
       const tr = document.createElement('tr');
+      celula(tr, miniatura(p.fotoProduto));
       celula(tr, p.nomeProduto);
       celula(tr, p.nomeCategoria);
       celula(tr, v.tamanho);
@@ -54,7 +69,7 @@ async function consultar() {
       linhas.push(tr);
     }
   }
-  if (!linhas.length) return linhaVazia(lista, editor ? 9 : 8, 'Nenhum produto encontrado com esses filtros.');
+  if (!linhas.length) return linhaVazia(lista, editor ? 10 : 9, 'Nenhum produto encontrado com esses filtros.');
   lista.replaceChildren(...linhas);
 }
 
@@ -67,6 +82,7 @@ async function editarProduto(id) {
     const produto = await api(`/api/produtos/${id}`);
     preencherFormulario(formProduto, produto);
     idProdutoEditando = id;
+    mostrarFoto(produto.fotoProduto);
     document.querySelector('#tituloProduto').textContent = `Editando: ${produto.nomeProduto}`;
     document.querySelector('#novoProduto').hidden = false;
     mostrarGrade(produto);
@@ -79,6 +95,7 @@ async function editarProduto(id) {
 function novoProduto() {
   idProdutoEditando = null;
   formProduto.reset();
+  mostrarFoto(null);
   document.querySelector('#tituloProduto').textContent = 'Novo produto';
   document.querySelector('#novoProduto').hidden = true;
   document.querySelector('#secaoGrade').hidden = true;
@@ -94,12 +111,69 @@ formProduto.addEventListener('submit', async (evento) => {
   try {
     if (idProdutoEditando) {
       await enviar(`/api/produtos/${idProdutoEditando}`, 'PUT', dados);
+      await salvarFoto(idProdutoEditando);
       mostrarMensagem(aviso, 'Produto atualizado!', 'sucesso');
     } else {
       const { idProduto } = await enviar('/api/produtos', 'POST', dados);
-      mostrarMensagem(aviso, 'Produto cadastrado! Agora cadastre a grade (tamanhos e cores).', 'sucesso');
+      idProdutoEditando = idProduto;   // se a foto falhar, o próximo "Salvar" edita em vez de duplicar
+      await salvarFoto(idProduto);
       await editarProduto(idProduto);
+      mostrarMensagem(aviso, 'Produto cadastrado! Agora cadastre a grade (tamanhos e cores).', 'sucesso');
     }
+    await consultar();
+  } catch (erro) {
+    mostrarMensagem(aviso, erro.message);
+  }
+});
+
+// ---------- RF04: foto do produto ----------
+function mostrarFoto(caminho) {
+  fotoAtual = caminho;
+  fotoEscolhida = null;
+  arquivoFoto.value = '';
+  pintarPrevia(caminho);
+}
+
+function pintarPrevia(url) {
+  previaFoto.style.backgroundImage = url ? `url("${url.startsWith('data:') ? url : encodeURI(url)}")` : '';
+  previaFoto.classList.toggle('vazia', !url);
+  botaoRemoverFoto.hidden = !url;
+}
+
+// Prévia na hora; o envio acontece ao salvar o produto
+arquivoFoto.addEventListener('change', () => {
+  const arquivo = arquivoFoto.files[0];
+  const aviso = document.querySelector('#mensagemProduto');
+  if (!arquivo) return;
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type)) {
+    arquivoFoto.value = '';
+    return mostrarMensagem(aviso, 'Formato inválido: escolha JPG, PNG ou WebP');
+  }
+  if (arquivo.size > 2 * 1024 * 1024) {
+    arquivoFoto.value = '';
+    return mostrarMensagem(aviso, 'A imagem deve ter no máximo 2 MB');
+  }
+  fotoEscolhida = arquivo;
+  const leitor = new FileReader();
+  leitor.addEventListener('load', () => pintarPrevia(leitor.result));
+  leitor.readAsDataURL(arquivo);
+  mostrarMensagem(aviso, 'Foto escolhida. Clique em "Salvar produto" para enviar.', 'alerta');
+});
+
+async function salvarFoto(idProduto) {
+  if (!fotoEscolhida) return;
+  const { fotoProduto } = await enviarArquivo(`/api/produtos/${idProduto}/foto`, 'foto', fotoEscolhida);
+  mostrarFoto(fotoProduto);
+}
+
+botaoRemoverFoto.addEventListener('click', async () => {
+  const aviso = document.querySelector('#mensagemProduto');
+  if (fotoEscolhida) return mostrarFoto(fotoAtual);   // desiste da foto que ainda não foi enviada
+  if (!idProdutoEditando || !confirm('Remover a foto deste produto?')) return;
+  try {
+    await api(`/api/produtos/${idProdutoEditando}/foto`, { method: 'DELETE' });
+    mostrarFoto(null);
+    mostrarMensagem(aviso, 'Foto removida.', 'sucesso');
     await consultar();
   } catch (erro) {
     mostrarMensagem(aviso, erro.message);

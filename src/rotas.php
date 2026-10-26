@@ -87,6 +87,8 @@ $r->grupo('/api/produtos', [$logado], function (Router $r) use ($estoquistas, $g
     $r->post('', [ProdutoController::class, 'criar'], [$estoquistas]);
     $r->put('/:id', [ProdutoController::class, 'atualizar'], [$estoquistas]);
     $r->patch('/:id/inativar', [ProdutoController::class, 'inativar'], [$gestao]);
+    $r->post('/:id/foto', [ProdutoController::class, 'enviarFoto'], [$estoquistas]);
+    $r->delete('/:id/foto', [ProdutoController::class, 'removerFoto'], [$estoquistas]);
     $r->post('/:id/variacoes', [ProdutoController::class, 'criarVariacao'], [$estoquistas]);
 });
 

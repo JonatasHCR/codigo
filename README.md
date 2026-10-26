@@ -19,11 +19,15 @@ docker compose up -d --build
 Abra **http://localhost:3000**. Na primeira vez, o MySQL cria as tabelas (`database/schema.sql`) e os dados de teste (`database/seed.sql`),
 e o Docker baixa as bibliotecas PHP com o **Composer** (só o FPDF, para os PDFs).
 
+> Banco criado **antes** das fotos de exemplo? O `seed.sql` só roda em banco novo. Para colocar as fotos nos produtos
+> de exemplo sem apagar nada, rode o comando que está no início de `database/atualizacoes/001-fotos-exemplo.sql`.
+
 ### Sem Docker (XAMPP/WAMP)
 1. Rode `composer install` na pasta do projeto.
 2. Aponte o Apache para a pasta **`public/`** (com `mod_rewrite` e `AllowOverride All`, por causa do `public/.htaccess`).
 3. Crie o banco com `database/schema.sql` e `database/seed.sql`.
 4. Ajuste o `.env` (`DB_HOST=localhost`, `DB_PORT=3306`...). O `src/bootstrap.php` lê esse arquivo sozinho.
+5. Para as fotos dos produtos, o Apache precisa poder gravar em `public/uploads/` (a pasta é criada no primeiro envio).
 
 ### Usuários de teste
 | Login | Senha | Perfil | O que vê |
@@ -55,6 +59,8 @@ public/            ← o que o navegador acessa (DocumentRoot do Apache)
   api.php          ← ponto de entrada da API (tudo em /api/... cai aqui pelo .htaccess)
   .htaccess        ← reescrita /api → api.php + cabeçalhos de segurança
   *.html, css/, js/, fonts/   ← telas (HTML, CSS e JavaScript puros)
+  img/produtos/    ← fotos de exemplo dos produtos do seed
+  uploads/         ← fotos enviadas pela tela de produtos (no Docker, volume fotos-produtos)
 src/               ← BACK-END em PHP (protegido: fora da pasta pública)
   bootstrap.php    ← autoload, .env, fuso horário
   rotas.php        ← todas as URLs da API e quem pode acessar cada uma
@@ -63,8 +69,8 @@ src/               ← BACK-END em PHP (protegido: fora da pasta pública)
   Middlewares/     ← Auth (login e perfil), Validacoes (regras de cada formulário)
   Controllers/     ← regras de negócio de cada módulo
   Models/          ← SQL de cada módulo
-  Utils/           ← Cpf, Dinheiro, Loja, Autorizacao, Pdf (FPDF), Csv
-database/          ← schema.sql e seed.sql
+  Utils/           ← Cpf, Dinheiro, Loja, Autorizacao, Imagem (upload de fotos), Pdf (FPDF), Csv
+database/          ← schema.sql, seed.sql e atualizacoes/ (scripts para bancos que já existiam)
 scripts/           ← criarAdmin.php, backup.bat, smoke.js (teste)
 docker/            ← apache.conf e php.ini usados na imagem
 ```
@@ -75,9 +81,9 @@ docker/            ← apache.conf e php.ini usados na imagem
 ```bash
 npm run smoke
 ```
-Teste de ponta a ponta da API (**80 verificações**), escrito em JavaScript e rodado com o Node.js do PC: ele só chama a API por HTTP,
+Teste de ponta a ponta da API (**86 verificações**), escrito em JavaScript e rodado com o Node.js do PC: ele só chama a API por HTTP,
 então funciona com qualquer linguagem no servidor. Cobre login e bloqueio, permissões, cadastros, grade, entrada de estoque,
-promoção, venda com transação (inclusive **rollback** com estoque insuficiente), troco, parcelas, autorização do gerente,
+foto do produto (upload, PHP disfarçado recusado), promoção, venda com transação (inclusive **rollback** com estoque insuficiente), troco, parcelas, autorização do gerente,
 troca, devolução, vale-troca, fidelidade, cancelamento, caixa, os 7 relatórios em JSON/PDF/CSV e LGPD.
 
 ---
@@ -89,7 +95,7 @@ troca, devolução, vale-troca, fidelidade, cancelamento, caixa, os 7 relatório
 | RF01 Clientes (+ CEP pela ViaCEP) | `Models/ClienteModel.php` | `clientes.html` |
 | RF02 Fornecedores (CNPJ validado) | `Models/FornecedorModel.php` | `fornecedores.html` |
 | RF03 Categorias | `Models/CategoriaModel.php` | `categorias.html` |
-| RF04 Produtos · RF05 Grade · RF17 Consulta | `Models/ProdutoModel.php` | `produtos.html` |
+| RF04 Produtos (com foto) · RF05 Grade · RF17 Consulta | `Models/ProdutoModel.php`, `Utils/Imagem.php` | `produtos.html` |
 | RF06 Funcionários | `Models/UsuarioModel.php` | `usuarios.html` |
 | RF07 Login, bloqueio na 3ª tentativa, log, menu por perfil | `Controllers/AuthController.php`, `Middlewares/Auth.php` | `login.html`, `js/menu.js` |
 | RF08 Entrada de mercadorias | `Models/EstoqueModel.php` | `estoque.html` |

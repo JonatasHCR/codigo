@@ -33,7 +33,7 @@
       <div class="tabela-rolagem">
         <table>
           <thead>
-            <tr><th>Produto</th><th>Categoria</th><th>Tam.</th><th>Cor</th><th>Código de barras</th>
+            <tr><th>Foto</th><th>Produto</th><th>Categoria</th><th>Tam.</th><th>Cor</th><th>Código de barras</th>
                 <th class="numero">Preço</th><th class="numero">Estoque</th><th>Local</th><th class="editor">Ações</th></tr>
           </thead>
           <tbody id="lista"></tbody>
@@ -66,6 +66,14 @@
         <label>Preço de custo <input name="precoCusto" type="number" min="0" step="0.01" required></label>
         <label>Preço de venda <input name="precoVenda" type="number" min="0.01" step="0.01" required></label>
         <label class="largo">Descrição <textarea name="descricaoProduto" rows="2"></textarea></label>
+        <div class="largo campo-foto">
+          <div id="previaFoto" class="previa-foto vazia" role="img" aria-label="Foto do produto"><span>Sem foto</span></div>
+          <div>
+            <label>Foto do produto <input type="file" id="arquivoFoto" accept="image/jpeg,image/png,image/webp"></label>
+            <p class="suave">JPG, PNG ou WebP, até 2 MB. A foto aparece na consulta e na vitrine do PDV.</p>
+            <button type="button" id="removerFoto" class="secundario pequeno" hidden>Remover foto</button>
+          </div>
+        </div>
         <button type="submit">Salvar produto</button>
       </form>
       <p id="mensagemProduto" class="mensagem" role="status"></p>

@@ -32,6 +32,7 @@ final class Router
     public function post(string $caminho, array $acao, array $guardas = []): void { $this->adicionar('POST', $caminho, $acao, $guardas); }
     public function put(string $caminho, array $acao, array $guardas = []): void { $this->adicionar('PUT', $caminho, $acao, $guardas); }
     public function patch(string $caminho, array $acao, array $guardas = []): void { $this->adicionar('PATCH', $caminho, $acao, $guardas); }
+    public function delete(string $caminho, array $acao, array $guardas = []): void { $this->adicionar('DELETE', $caminho, $acao, $guardas); }
 
     private function adicionar(string $metodo, string $caminho, array $acao, array $guardas): void
     {

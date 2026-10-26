@@ -20,4 +20,7 @@ COPY src ./src
 COPY scripts ./scripts
 COPY --from=dependencias /app/vendor ./vendor
 
+# Pasta das fotos enviadas: o Apache (usuário www-data) precisa poder gravar nela
+RUN mkdir -p public/uploads/produtos && chown -R www-data:www-data public/uploads
+
 EXPOSE 80

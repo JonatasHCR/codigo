@@ -30,12 +30,13 @@ INSERT INTO tb_fornecedor (razaoSocial, nomeFantasia, cnpjFornecedor, telefoneFo
   ('Confecções Bahia Ltda',       'Bahia Moda',   '11222333000181', '7133334444', 'vendas@bahiamoda.com.br', 'Rita',  'Salvador',  'BA'),
   ('Calçados Nordeste Indústria', 'Passo Firme',  '11444777000161', '7532215566', 'contato@passofirme.com.br', 'Paulo', 'Feira de Santana', 'BA');
 
-INSERT INTO tb_produto (codigoProduto, nomeProduto, descricaoProduto, idCategoria, idFornecedor, marcaProduto, generoProduto, materialProduto, precoCusto, precoVenda) VALUES
-  ('CAM-001', 'Camisa Polo Básica',   'Camisa polo de algodão piquet', 1, 1, 'Bahia Moda',  'MASCULINO', 'algodão', 35.00,  89.90),
-  ('CAL-001', 'Calça Jeans Slim',     'Calça jeans com elastano',      2, 1, 'Bahia Moda',  'FEMININO',  'jeans',   60.00, 149.90),
-  ('VES-001', 'Vestido Midi Floral',  'Vestido midi estampado',        3, 1, 'Bahia Moda',  'FEMININO',  'viscose', 55.00, 129.90),
-  ('TEN-001', 'Tênis Casual Couro',   'Tênis casual de couro legítimo',4, 2, 'Passo Firme', 'UNISSEX',   'couro',   90.00, 229.90),
-  ('SAN-001', 'Sandália Rasteira',    'Rasteirinha com tiras',         5, 2, 'Passo Firme', 'FEMININO',  'sintético',25.00, 59.90);
+-- fotoProduto: imagens de exemplo que vêm com o sistema (public/img/produtos)
+INSERT INTO tb_produto (codigoProduto, nomeProduto, descricaoProduto, idCategoria, idFornecedor, marcaProduto, generoProduto, materialProduto, precoCusto, precoVenda, fotoProduto) VALUES
+  ('CAM-001', 'Camisa Polo Básica',   'Camisa polo de algodão piquet', 1, 1, 'Bahia Moda',  'MASCULINO', 'algodão', 35.00,  89.90, 'img/produtos/camisa-polo.png'),
+  ('CAL-001', 'Calça Jeans Slim',     'Calça jeans com elastano',      2, 1, 'Bahia Moda',  'FEMININO',  'jeans',   60.00, 149.90, 'img/produtos/calca-jeans.png'),
+  ('VES-001', 'Vestido Midi Floral',  'Vestido midi estampado',        3, 1, 'Bahia Moda',  'FEMININO',  'viscose', 55.00, 129.90, 'img/produtos/vestido-midi.png'),
+  ('TEN-001', 'Tênis Casual Couro',   'Tênis casual de couro legítimo',4, 2, 'Passo Firme', 'UNISSEX',   'couro',   90.00, 229.90, 'img/produtos/tenis-couro.png'),
+  ('SAN-001', 'Sandália Rasteira',    'Rasteirinha com tiras',         5, 2, 'Passo Firme', 'FEMININO',  'sintético',25.00, 59.90, 'img/produtos/sandalia-rasteira.png');
 
 INSERT INTO tb_produto_variacao (idProduto, tamanho, cor, codigoBarras, quantidadeEstoque, estoqueMinimo, localizacao) VALUES
   (1, 'P',  'Azul',   '7890000000011', 10, 2, 'A1'),

@@ -32,6 +32,15 @@ class Sessao {
   post(c, b) { return this.req('POST', c, b); }
   put(c, b) { return this.req('PUT', c, b); }
   patch(c, b) { return this.req('PATCH', c, b); }
+  delete(c) { return this.req('DELETE', c); }
+
+  // Upload (multipart), como o <input type="file"> da tela de produtos
+  async enviarArquivo(caminho, campo, conteudo, tipo, nome) {
+    const corpo = new FormData();
+    corpo.append(campo, new Blob([conteudo], { type: tipo }), nome);
+    const resposta = await fetch(BASE + caminho, { method: 'POST', headers: { Cookie: this.cookie }, body: corpo });
+    return { status: resposta.status, dados: await resposta.json().catch(() => null) };
+  }
 
   async login(login, senha) {
     const r = await this.post('/api/auth/login', { login, senha });
@@ -135,6 +144,24 @@ async function main() {
     (await admin.post(`/api/produtos/${idProduto}/variacoes`, { tamanho: 'M', cor: 'Verde' })).status === 409);
   const idM = varM.dados.idVariacao;
   const idG = varG.dados.idVariacao;
+
+  // Foto do produto (upload)
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+  const foto = await admin.enviarArquivo(`/api/produtos/${idProduto}/foto`, 'foto', png, 'image/png', 'camiseta.png');
+  verificar('Envia a foto do produto (PNG)', foto.status === 200 && foto.dados.fotoProduto.startsWith('uploads/produtos/'), JSON.stringify(foto.dados));
+  const servida = await fetch(`${BASE}/${foto.dados.fotoProduto}`);
+  verificar('A foto enviada fica acessível no navegador', servida.status === 200 && servida.headers.get('content-type') === 'image/png');
+  verificar('Arquivo PHP disfarçado de imagem é recusado (400)',
+    (await admin.enviarArquivo(`/api/produtos/${idProduto}/foto`, 'foto', '<?php echo 1;', 'image/png', 'foto.png')).status === 400);
+  verificar('Vendedor não pode trocar a foto (403)',
+    (await vendedor.enviarArquivo(`/api/produtos/${idProduto}/foto`, 'foto', png, 'image/png', 'x.png')).status === 403);
+  await admin.put(`/api/produtos/${idProduto}`, produtoBase);
+  verificar('Editar os dados do produto não apaga a foto',
+    (await admin.get(`/api/produtos/${idProduto}`)).dados.fotoProduto === foto.dados.fotoProduto);
+  const remocao = await admin.delete(`/api/produtos/${idProduto}/foto`);
+  verificar('Remove a foto (e o arquivo some do servidor)',
+    remocao.status === 204 && (await admin.get(`/api/produtos/${idProduto}`)).dados.fotoProduto === null
+    && (await fetch(`${BASE}/${foto.dados.fotoProduto}`)).status === 404);
 
   // ------------------------------------------------------------------
   titulo('RF08 / RF16 — Entrada de estoque e alertas');

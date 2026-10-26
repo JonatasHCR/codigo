@@ -95,7 +95,7 @@ final class ProdutoModel extends Model
             self::ouNulo($p['codigoProduto'] ?? null), $p['nomeProduto'], self::ouNulo($p['descricaoProduto'] ?? null),
             $p['idCategoria'], $p['idFornecedor'], self::ouNulo($p['marcaProduto'] ?? null),
             self::ouNulo($p['generoProduto'] ?? null), self::ouNulo($p['materialProduto'] ?? null),
-            $p['precoCusto'], $p['precoVenda'], self::ouNulo($p['fotoProduto'] ?? null),
+            $p['precoCusto'], $p['precoVenda'],
         ];
     }
 
@@ -104,8 +104,8 @@ final class ProdutoModel extends Model
         return self::inserir(
             'INSERT INTO tb_produto
                (codigoProduto, nomeProduto, descricaoProduto, idCategoria, idFornecedor, marcaProduto,
-                generoProduto, materialProduto, precoCusto, precoVenda, fotoProduto)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                generoProduto, materialProduto, precoCusto, precoVenda)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             self::valores($p)
         );
     }
@@ -116,10 +116,16 @@ final class ProdutoModel extends Model
             'UPDATE tb_produto
                 SET codigoProduto = ?, nomeProduto = ?, descricaoProduto = ?, idCategoria = ?,
                     idFornecedor = ?, marcaProduto = ?, generoProduto = ?, materialProduto = ?,
-                    precoCusto = ?, precoVenda = ?, fotoProduto = ?
+                    precoCusto = ?, precoVenda = ?
               WHERE idProduto = ?',
             [...self::valores($p), $id]
         ) > 0;
+    }
+
+    // A foto tem rota própria (upload); por isso não entra no criar/atualizar acima
+    public static function atualizarFoto(int $id, ?string $caminho): bool
+    {
+        return self::executar('UPDATE tb_produto SET fotoProduto = ? WHERE idProduto = ?', [$caminho, $id]) > 0;
     }
 
     public static function inativar(int $id): bool

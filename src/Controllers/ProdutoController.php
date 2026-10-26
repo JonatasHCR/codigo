@@ -8,6 +8,7 @@ use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Middlewares\Validacoes;
 use App\Models\ProdutoModel;
+use App\Utils\Imagem;
 use PDOException;
 
 final class ProdutoController
@@ -67,6 +68,26 @@ final class ProdutoController
     public static function inativar(Requisicao $req): void
     {
         if (!ProdutoModel::inativar((int) $req->param('id'))) throw new ErroApp('Produto não encontrado', 404);
+        Resposta::vazio();
+    }
+
+    // RF04: foto do produto, enviada como formulário multipart (campo "foto")
+    public static function enviarFoto(Requisicao $req): void
+    {
+        $id = (int) $req->param('id');
+        $produto = ProdutoModel::buscarPorId($id) ?? throw new ErroApp('Produto não encontrado', 404);
+        $caminho = Imagem::salvar($req->arquivo('foto'), "produto-$id");
+        ProdutoModel::atualizarFoto($id, $caminho);
+        Imagem::apagar($produto['fotoProduto']);   // a foto antiga não fica ocupando espaço
+        Resposta::json(['fotoProduto' => $caminho]);
+    }
+
+    public static function removerFoto(Requisicao $req): void
+    {
+        $id = (int) $req->param('id');
+        $produto = ProdutoModel::buscarPorId($id) ?? throw new ErroApp('Produto não encontrado', 404);
+        ProdutoModel::atualizarFoto($id, null);
+        Imagem::apagar($produto['fotoProduto']);
         Resposta::vazio();
     }
 
